@@ -1,0 +1,422 @@
+{% load humanize %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Skydash Admin Dashboard Template">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+    <!-- لود jQuery (ضروری برای DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- لود DataTables.js -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+
+    <link href="styles.css" rel="stylesheet"> <!-- Custom styles -->
+
+    
+
+</head>
+<style>
+.avatar {
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  height: 45px;
+  width: 45px;
+  transition: all 0.2s ease-in-out;
+}
+</style>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-none d-md-block bg-dark text-white vh-100 position-fixed sidebar">
+                <div class="pt-3">
+                    <h5><i class="fas fa-user-tie"></i> Quality Control</h5>
+                    <hr style="color: antiquewhite;">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active text-white" href="/">
+                                <i class="fas fa-tachometer-alt"></i> FollowUp
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/income">
+                                <i class="fas fa-chart-line"></i> Sales
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/top">
+                                <i class="fas fa-cogs"></i> Top Result
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- دکمه همبرگری فقط در موبایل -->
+            <button class="btn btn-dark d-md-none mb-3" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#mobileSidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- منوی همبرگری در موبایل -->
+            <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="mobileSidebar">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title">
+                        <i class="fas fa-user-tie"></i> Quality Control
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active text-white" href="/">
+                                <i class="fas fa-tachometer-alt"></i> FollowUp
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/income">
+                                <i class="fas fa-chart-line"></i> Sales
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/top">
+                                <i class="fas fa-cogs"></i> Top Result
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Income</h1>
+                    <!-- <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                            <span data-feather="calendar"></span>
+                            This week
+                        </button>
+                    </div> -->
+                </div>
+
+                <!-- Cards Row -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card text-bg-primary mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Staff</h5>
+                                <p class="card-text">Total Members: 4</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-bg-success mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Income</h5>
+                                <p class="card-text">Total Income: {{sum_income_place}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-bg-warning mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Pending</h5>
+                                <p class="card-text">Total Pending: {{pending_count}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<br>
+                <!-- Charts Section -->
+                <div class="row">
+                    
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Total Income</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="INCOMEchart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Monthly Sales</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="MONTHLYSALESchart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<br>
+                <div class="row">
+                    <div class="col-lg-12">
+                     <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Employee Stats</h5>
+                        </div>
+                        <table id="myTable" class="display">
+                            <thead>
+                              <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Total Income</th>
+                                <th scope="col">Monthly Income</th>
+                                <th scope="col">Pending</th>
+                                <th scope="col">Cancel</th>
+                                <th scope="col">Total Dr</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>
+                                    <div class="d-flex px-2">
+                                    <div>
+                                      <img src="https://www.w3schools.com/w3images/fjords.jpg" class="avatar avatar-sm rounded-circle me-2" alt="">
+                                    </div>
+                                    <div class="my-auto">
+                                      <h6 class="mb-0 text-sm"><a class="nav-link text-dark" href="/sanam">
+                                        Sanam
+                                    </a></h6>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td>{{sum_income_place_sanam|intcomma}}</td>
+                                <td>{{sum_month_income_place_sanam|intcomma}}</td>
+                                <td>{{sanam_pending_count}}</td>
+                                <td>{{sanam_cancel_count}}</td>
+                                <td>{{sanam_count}}</td>
+                              </tr>
+                              <tr>
+                                <td><div class="d-flex px-2">
+                                    <div>
+                                      <img src="https://www.w3schools.com/w3images/fjords.jpg" class="avatar avatar-sm rounded-circle me-2" alt="">
+                                    </div>
+                                    <div class="my-auto">
+                                      <h6 class="mb-0 text-sm"><a class="nav-link text-dark" href="/sara">
+                                        Sara
+                                    </a></h6>
+                                    </div>
+                                  </div></td>
+                                <td>{{sum_income_place_sara|intcomma}}</td>
+                                <td>{{sum_month_income_place_sara|intcomma}}</td>
+                                <td>{{sara_pending_count}}</td>
+                                <td>{{sara_cancel_count}}</td>
+                                <td>{{sara_count}}</td>
+                              </tr>
+                              <tr>
+                                <td><div class="d-flex px-2">
+                                    <div>
+                                      <img src="https://www.w3schools.com/w3images/fjords.jpg" class="avatar avatar-sm rounded-circle me-2" alt="">
+                                    </div>
+                                    <div class="my-auto">
+                                      <h6 class="mb-0 text-sm"><a class="nav-link text-dark" href="/elahe">
+                                        Elahe
+                                    </a></h6>
+                                    </div>
+                                  </div></td>
+                                <td>{{sum_income_place_elahe|intcomma}}</td>
+                                <td>{{sum_month_income_place_elahe|intcomma}}</td>
+                                <td>{{elahe_pending_count}}</td>
+                                <td>{{elahe_cancel_count}}</td>
+                                <td>{{elahe_count}}</td>
+                              </tr>
+                              <tr>
+                                <td><div class="d-flex px-2">
+                                    <div>
+                                      <img src="{% static 'images/bayat.jpg' %}" class="avatar avatar-sm rounded-circle me-2" alt="">
+                                    </div>
+                                    <div class="my-auto">
+                                      <h6 class="mb-0 text-sm"><a class="nav-link text-dark" href="/mohammad">
+                                        Mohammad
+                                    </a></h6>
+                                    </div>
+                                  </div></td>
+                                <td>{{sum_income_place_mohamad|intcomma}}</td>
+                                <td>{{sum_month_income_place_mohamad|intcomma}}</td>
+                                <td>{{mohamad_pending_count}}</td>
+                                <td>{{mohamad_cancel_count}}</td>
+                                <td>{{mohamad_count}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                     </div>
+                    </div>    
+                </div>  
+<br>
+
+                        <div class="row">
+     
+                            <div class="col-lg-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5>User Monthly Chart</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        
+                                        <canvas id="USERMONTHLYchart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5>User Success</h5>
+                                    </div>
+                                    <div class="card-body">
+        
+                                        
+                                        
+                                            <div class="mt-3">
+                                                <p>Sanam</p>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-warning" style="width: {{success_rate_sanam}}%;">{{success_rate_sanam|floatformat}}%</div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <p>Sara</p>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" style="width: {{success_rate_sara}}%;">{{success_rate_sara|floatformat}}%</div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <p>Elahe</p>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-info" style="width: {{success_rate_elahe}}%;">{{success_rate_elahe|floatformat}}%</div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <p>Mohamad</p>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-danger" style="width: {{success_rate_mohamad}}%;">{{success_rate_mohamad|floatformat}}%</div>
+                                                </div>
+                                            </div>
+        
+                                        
+                                    </div>
+                                </div>
+                            </div>
+        
+                           
+                        </div>
+<br>
+                       
+                
+    </div>
+    </main>
+    </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        
+        // Example Chart.js configuration
+        const ctx1 = document.getElementById('MONTHLYSALESchart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['farvardin', 'ordibehesht', 'khordad', 'tir', 'mordad', 'shahrivar', 'mehr', 'aban', 'azar', 'dey', 'bahman', 'esfand'],
+                datasets: [{
+                    label: 'Done',
+                    data: [{{sum_income_place_farvardin}}, {{sum_income_place_ordibehesht}}, {{sum_income_place_khordad}},
+                            {{sum_income_place_tir}}, {{sum_income_place_mordad}}, {{sum_income_place_shahrivar}},
+                            {{sum_income_place_mehr}},{{sum_income_place_aban}}, {{sum_income_place_azar}},
+                            {{sum_income_place_dey}}, {{sum_income_place_bahman}}, {{sum_income_place_esfand}}],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2
+                }]
+            }
+        });
+
+        const ctx2 = document.getElementById('INCOMEchart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Sanam', 'Sara', 'Elahe', 'Mohamad'],
+                datasets: [{
+                    label: 'Done',
+                    data: [{{sum_income_place_sanam}}, {{sum_income_place_sara}}, {{sum_income_place_elahe}}, {{sum_income_place_mohamad}}],
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 2
+                }]
+            }
+        });
+
+        const ctx4 = document.getElementById('USERMONTHLYchart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: ['sanam', 'sara', 'elahe', 'mohamad'],
+                datasets: [{
+                    label: 'User Monthly chart',
+                    data: [{{sum_month_income_place_sanam}}, {{sum_month_income_place_sara}}, {{sum_month_income_place_elahe}}, {{sum_month_income_place_mohamad}}],
+                    backgroundColor: 'skyblue'
+                }]
+            }
+        });
+
+        // فعال کردن DataTables برای جدول
+        $(document).ready(function() {
+            $('#myTable').DataTable({
+                // فعال کردن فیلتر و مرتب‌سازی
+                "paging": false,        // فعال کردن صفحه‌بندی
+                "searching": false,     // فعال کردن جستجو
+                "ordering": true,      // فعال کردن مرتب‌سازی
+                "info": false,          // نمایش اطلاعات
+                
+            });
+        });
+
+    </script>
+
+    <!-- <h1>داده‌های شیت گوگل</h1>
+    <table>
+        <thead>
+            <tr>
+                {% if sheet_data|length > 0 %}
+                    {% for header in sheet_data.0.keys %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in sheet_data %}
+                <tr>
+                    {% for value in row.values %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table> -->
+
+</body>
+
+</html>
