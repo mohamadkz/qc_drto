@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-*3(b!tvn0^+%z6v!e$*#u(v6_rpq=aa!z-#owe^)#t%65q!g-l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -125,6 +125,8 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # مسیر درست برای ذخیره فایل‌های استاتیک
+
 
 # اگر تصاویر شما در پوشه خاصی ذخیره شده‌اند، باید این را اضافه کنید:
 STATICFILES_DIRS = [
